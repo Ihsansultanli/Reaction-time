@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reactietijd Mini Game</title>
+
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family:'Courier New', monospace;
+  min-height:100vh;
+  background:#0f172a;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:#e5e7eb;
+}
+
+.container {
+  background:white;
+  padding:25px;
+  width:320px;
+  text-align:center;
+  border-radius:12px;
+  box-shadow:0 15px 40px rgba(0,0,0,0.4);
+}
+
+#clock {
+  font-size:22px;
+  font-weight:600;
+  letter-spacing:1px;
+  margin-bottom:18px;
+  color:#6366f1;
+}
+
+#gameArea {
+  height:140px;
+  background:#94a3b8;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin-bottom:16px;
+  font-size:20px;
+  font-weight:600;
+  cursor:pointer;
+  border-radius:10px;
+  transition:background 0.2s ease, transform 0.1s ease;
+  user-select:none;
+}
+
+#gameArea:active {
+  transform:scale(0.97);
+}
+
+button {
+  width:100%;
+  padding:12px;
+  background:#6366f1;
+  color:white;
+  font-size:16px;
+  font-weight:600;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+button:hover {
+  background:#4f46e5;
+}
+
+button:active {
+  transform:scale(0.97);
+}
+
+#result {
+  margin-top:14px;
+  font-size:16px;
+  color:#1e293b;
+  min-height:20px;
+}
+</style>
+
+
+</head>
+<body>
+
+
+<div class="container">
+  <div id="clock">--:--:--</div>
+  <div id="gameArea">Druk op Start</div>
+  <button id="startBtn">Start</button>
+  <div id="result"></div>
+</div>
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const clock = document.getElementById("clock");
+  const gameArea = document.getElementById("gameArea");
+  const startBtn = document.getElementById("startBtn");
+  const result = document.getElementById("result");
+
+  // Tijd van nu...
+  setInterval(() => {
+    clock.textContent = new Date().toLocaleTimeString();
+  }, 1000);
+
+  let startTime = null;
+  let waiting = false;
+  let timeoutId = null;
+
+  //Start button
+  startBtn.addEventListener("click", () => {
+    resetGame();
+
+    waiting = true;
+    gameArea.style.background = "#dc2626";
+    gameArea.textContent = "Wacht even...";
+
+    const randomTime = Math.random() * 2000 + 1000;
+
+    timeoutId = setTimeout(() => {
+      gameArea.style.background = "#16a34a";
+      gameArea.textContent = "KLIK!";
+      startTime = Date.now();
+    }, randomTime);
+  });
+
+  //klikkenn
+  gameArea.addEventListener("click", () => {
+    if (!waiting) return;
+
+    // Te vroeg
+    if (startTime === null) {
+      clearTimeout(timeoutId);
+      result.textContent = "Te vroegggg geklikt! Probeer opnieuw.";
+      resetGame();
+      return;
+    }
+
+    //reactie tijd
+    const reaction = Date.now() - startTime;
+    result.textContent = "Reactietijd: " + reaction + " ms";
+    resetGame();
+  });
+
+  function resetGame() {
+    clearTimeout(timeoutId);
+    startTime = null;
+    waiting = false;
+    gameArea.style.background = "#94a3b8";
+    gameArea.textContent = "Druk op Start";
+  }
+});
+</script>
+
+
+</body>
+</html>
